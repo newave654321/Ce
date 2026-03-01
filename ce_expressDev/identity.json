@@ -1,0 +1,23 @@
+{
+  "nodeId": "CE-NODE-101",
+  "name": "Neighbor One",
+  "first": "Neighbor",
+  "isLocked": false,
+  "expertise": ["art", "mentorship", "leadership"],
+  "bio": "community organizer.",
+  "commerce": {
+    "blurb": "Offering mentorship.",
+    "addr": "Main Street Node",
+    "tel": "555-0199",
+    "email": "me@ce-mesh.local",
+    "hours": "9am - 5pm",
+    "isDigital": false
+  },
+  "sharing": {
+    "items": "childcare, transportation, food"
+  },
+  "community": {
+    "img": "profile/community/community-profile.jpg",
+    "bio": "Building a resilient local mesh since 2026."
+  }
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ce-Express | The Porch</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        :root {
+            --local-blue: #3498db;
+            --bg-gray: #f5f7f9;
+            --border: #e0e0e0;
+            --text: #333;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-gray); 
+            color: var(--text); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        /* BANNER STYLE */
+        .movie-banner {
+            width: 100%;
+            height: 300px;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .movie-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8; /* Slight dimming for the "cinematic" look */
+        }
+
+        .container { 
+            width: 90%;
+            max-width: 800px; 
+            background: white; 
+            border-radius: 8px; 
+            padding: 40px; 
+            margin-top: -60px; /* Overlaps the banner slightly */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            border: 1px solid var(--border);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--bg-gray);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 { font-size: 24px; font-weight: 700; margin: 0; color: var(--text); letter-spacing: -0.5px; }
+        
+        .vault-path { 
+            font-family: monospace;
+            font-size: 11px; 
+            color: var(--local-blue); 
+            background: #eef2f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .instructions { font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 30px; }
+
+        .file-item { 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px; 
+            background: #fff; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .file-item:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: var(--local-blue); 
+        }
+
+        .status-pill {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            background: #ebf5fb;
+            color: var(--local-blue);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-link { 
+            position: absolute; top: 20px; left: 20px; 
+            color: white; text-decoration: none; 
+            font-weight: 600; font-size: 13px; 
+            background: rgba(0,0,0,0.5); padding: 8px 16px; 
+            border-radius: 6px; backdrop-filter: blur(5px);
+            z-index: 100; border: 1px solid rgba(255,255,255,0.2); 
+        }
+    </style>
+</head>
+<body>
+
+<div class="movie-banner">
+    <a href="index.html" class="nav-link">← System HUD</a>
+   <img id="porch-banner" src="movies.png" alt="Banner">
+</div>
+
+<div class="container">
+    <div class="header-flex">
+        <div>
+            <h2 id="tit-porch">The Porch</h2>
+            <div class="vault-path" id="node-id">/ce_vault/node_initializing...</div>
+        </div>
+        <div class="status-pill">Active Node</div>
+    </div>
+
+    <p class="instructions" id="sub-porch">
+        Voluntary exchange assets verified by the local mesh protocol.
+    </p>
+    
+    <div id="file-display">
+        </div>
+</div>
+
+<script>
+    const porchDict = {
+        en: { "tit-porch": "The Porch", "sub-porch": "Voluntary exchange assets verified by the local mesh protocol. Identity is masked via Master Key." },
+        es: { "tit-porch": "El Porche", "sub-porch": "Activos de intercambio voluntario verificados por el protocolo local. Identidad oculta por Master Key." }
+    };
+
+    function syncProtocol() {
+        const lang = localStorage.getItem('ce_language') || 'en';
+        const idData = JSON.parse(localStorage.getItem('ce_identity_data') || '{}');
+        const isLocked = localStorage.getItem('ce_identity_locked') === 'true';
+
+        const data = porchDict[lang] || porchDict.en;
+        document.getElementById('tit-porch').innerText = data["tit-porch"];
+        document.getElementById('sub-porch').innerText = data["sub-porch"];
+
+        if (isLocked && idData.masterKey) {
+            document.getElementById('node-id').innerText = `/ce_vault/node_${idData.masterKey}`;
+        }
+    }
+
+    async function loadVault() {
+        syncProtocol();
+        const display = document.getElementById('file-display');
+        
+        try {
+            const res = await fetch('/api/content');
+            const files = await res.json();
+            
+            if (!files || files.length === 0) {
+                display.innerHTML = `<div style="text-align:center; padding:60px; color:#bbb; border:2px dashed #f0f0f0; border-radius:10px;">No assets currently broadcasted to the porch.</div>`;
+            } else {
+                display.innerHTML = files.map(f => `
+                    <div class="file-item">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:40px; height:40px; background:#f8f9fa; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#3498db; font-weight:bold; font-size:10px;">DOC</div>
+                            <span style="font-weight:600; font-size:15px;">${f}</span>
+                        </div>
+                        <span class="status-pill" style="background:#e8f8f5; color:#27ae60;">Vetted</span>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            display.innerHTML = `<div style="color:#e74c3c; font-size:13px; text-align:center; padding:20px;">Protocol Timeout: Node API unreachable.</div>`;
+        }
+    }
+
+    window.addEventListener('storage', syncProtocol);
+    loadVault();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CE Content Paywall Sandbox</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      margin: 0;
+    }
+
+    #sidebar {
+      width: 200px;
+      background: #f0f0f0;
+      padding: 1rem;
+    }
+
+    #main-content {
+      flex-grow: 1;
+      padding: 1rem;
+    }
+
+    #premium-content {
+      background: #ffe0b2;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none; /* Initially hidden */
+    }
+
+    #unlock-btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h2>Sidebar</h2>
+    <ul>
+      <li>Community</li>
+      <li>Commerce</li>
+      <li>Sharing</li>
+    </ul>
+  </div>
+
+  <div id="main-content">
+    <h1>Paywall Experiment</h1>
+    <div id="content-area">
+      <p>Welcome! Some of this content may be restricted based on paywall logic.</p>
+
+      <div id="premium-content">
+        <p>This is premium content. Only unlocked if paywall conditions are met.</p>
+      </div>
+
+      <button id="unlock-btn">Unlock Content</button>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Minimal paywall logic sandbox.
+     * Developers can experiment with:
+     *  - Subscription gating
+     *  - Coin/token checks (mocked)
+     *  - Time-based unlocks
+     */
+
+    const premiumContent = document.getElementById('premium-content');
+    const unlockBtn = document.getElementById('unlock-btn');
+
+    // Mock user state (sandbox only)
+    let userHasAccess = false;
+
+    // Event handler to "unlock" content
+    unlockBtn.addEventListener('click', () => {
+      if (userHasAccess) {
+        alert("Content already unlocked!");
+      } else {
+        // Example: simple sandbox logic
+        const userConfirmed = confirm("Simulate purchase to unlock content?");
+        if (userConfirmed) {
+          userHasAccess = true;
+          premiumContent.style.display = 'block';
+          unlockBtn.style.display = 'none';
+          console.log("[PAYWALL] Content unlocked in sandbox.");
+        }
+      }
+    });
+  </script>
+</body>
+</html>

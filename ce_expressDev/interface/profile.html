@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ce-Express | Profile Mirror</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    body { margin: 0; font-family: 'Inter', sans-serif; height: 100vh; display: flex; background: #fdfdfd; color: #333; overflow: hidden; }
+
+    #editor { width: 400px; background: #ffffff; border-right: 1px solid #e0e0e0; z-index: 10; overflow-y: scroll; padding-bottom: 50px; scrollbar-width: thin; scrollbar-color: #3498db #f1f1f1; }
+    #editor::-webkit-scrollbar { width: 6px; }
+    #editor::-webkit-scrollbar-track { background: #f1f1f1; }
+    #editor::-webkit-scrollbar-thumb { background: #3498db; border-radius: 10px; }
+
+    .section { margin: 15px; padding: 20px; background: #ffffff; border-radius: 6px; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+    #identity-block { background: #fffcfc; border: 1px solid #ffebeb; }
+
+    #debug-hud { margin: 15px; padding: 12px; background: #1a1a1a; color: #00ff00; font-family: monospace; font-size: 11px; border-radius: 4px; border: 1px solid #333; line-height: 1.6; }
+    .hud-label { color: #3498db; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; display: block; }
+
+    .disclaimer { font-size: 11px; color: #cc0000; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; }
+    #locked-status { display: none; margin: 15px; padding: 20px; background: #f9f9f9; text-align: center; border-radius: 6px; border: 1px solid #ddd; color: #444; font-weight: 700; }
+
+    h2 { font-size: 15px; font-weight: 700; margin: 0 0 5px 0; color: #333; }
+    .instructions { font-size: 12px; color: #777; margin-bottom: 15px; line-height: 1.4; }
+
+    label { display: block; font-size: 10px; font-weight: 700; color: #555; margin-top: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ddd; background: #fff; margin-top: 5px; box-sizing: border-box; font-family: inherit; font-size: 13px; }
+
+    .btn-commit, .btn-upload { background: #3498db; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; text-transform: uppercase; font-size: 12px; }
+    .btn-broadcast { background: #27ae60; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; font-size: 12px; }
+    .btn-reset { background: #eee; color: #444; padding: 6px 12px; border: none; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 10px; }
+
+    #mirror { flex-grow: 1; background: #f5f7f9; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .preview-card { width: 480px; background: white; border-radius: 8px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+    .preview-tag { font-size: 10px; font-weight: 700; color: #3498db; text-transform: uppercase; margin-bottom: 15px; }
+
+    .nav-link { position: fixed; top: 30px; left: 440px; color: #3498db; text-decoration: none; font-weight: 600; font-size: 14px; background: white; padding: 10px 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 100; border: 1px solid #eef2f6; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="nav-link">← System HUD</a>
+
+<div id="editor">
+    <div id="identity-block" class="section">
+        <div class="disclaimer">Note: It is imperative that this information is true.</div>
+        <h2 id="tit-id">Personal Profile</h2>
+        <label>First Name</label>
+        <input type="text" id="true-first" placeholder="John">
+        <label>Last Name</label>
+        <input type="text" id="true-last" placeholder="Doe">
+        <label>Birth Date (YYYY-MM-DD)</label>
+        <input type="text" id="true-birth" placeholder="1990-05-25">
+        <label>Gender (Optional)</label>
+        <select id="true-gender">
+            <option value="Prefer not to say">Prefer not to say</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Non-binary">Non-binary</option>
+        </select>
+        <label>True Residential Address</label>
+        <input type="text" id="true-addr">
+        <button class="btn-commit" onclick="lockIdentity()">Lock True Identity</button>
+    </div>
+
+    <div id="locked-status">
+        <span id="txt-locked">✅ Identity Locked</span>
+        <div id="key-display" style="font-family: monospace; font-size: 11px; background: #eee; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ddd; color: #333; word-break: break-all;"></div>
+        <button class="btn-reset" onclick="unlockIdentity()">Reset Identity</button>
+    </div>
+
+    <div id="debug-hud">
+        <span class="hud-label">SYSTEM DIAGNOSTICS</span>
+        <div>STATUS: <span id="status-msg">INITIALIZING</span></div>
+        <div>STORAGE: <span id="status-load">0%</span></div>
+        <div>ACTION: <span id="status-action">NONE</span></div>
+    </div>
+
+    <div class="section" onmouseenter="switchMirror('commerce')">
+        <h2>Commerce</h2>
+        <div class="instructions">Setup your storefront for the local neighbors.</div>
+        <label>Business Image</label>
+        <input type="file" id="com-upload" accept="image/*" onchange="previewImage(this, 'commerce')">
+        <label>Business Address</label>
+        <input type="text" id="com-addr">
+        <label>Business Email</label>
+        <input type="email" id="com-email" placeholder="email@node.com">
+        <label>Business Phone</label>
+        <input type="tel" id="com-phone" placeholder="555-0199">
+        <label>Operating Hours</label>
+        <input type="text" id="com-hours">
+        <label>Store Description</label>
+        <textarea id="com-blurb" rows="2"></textarea>
+    </div>
+
+    <div class="section" onmouseenter="switchMirror('sharing')">
+        <h2>Sharing</h2>
+        <div class="instructions">What are you willing to lend?</div>
+        <label>Resource Image</label>
+        <input type="file" id="share-upload" accept="image/*" onchange="previewImage(this, 'sharing')">
+        <label>Resource Inventory</label>
+        <textarea id="share-items" rows="3"></textarea>
+    </div>
+
+    <div class="section" onmouseenter="switchMirror('community')">
+        <h2>Community</h2>
+        <div class="instructions">Your public bio and agreements.</div>
+        <label>Profile Image</label>
+        <input type="file" id="comm-upload" accept="image/*" onchange="previewImage(this, 'community')">
+        <label>Neighbor Bio</label>
+        <textarea id="comm-bio" rows="4"></textarea>
+    </div>
+
+    <div class="section" style="border-top: 2px solid #f1f5f9; background: #fafafa;">
+        <h2>Finalize Presence</h2>
+        <button class="btn-broadcast" onclick="broadcastPresence()">Broadcast Presence</button>
+        <button class="btn-reset" onclick="clearDraft()">Clear Draft</button>
+    </div>
+</div>
+
+<div id="mirror">
+    <div class="preview-tag" id="mirror-label">Context: Commerce</div>
+    <div class="preview-card" id="preview-content"></div>
+</div>
+
+<script>
+    let commerceImageData = null, sharingImageData = null, communityImageData = null;
+    const placeholderImg = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80";
+
+    function previewImage(input, type) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if(type==='commerce') commerceImageData = e.target.result;
+                if(type==='sharing') sharingImageData = e.target.result;
+                if(type==='community') communityImageData = e.target.result;
+                syncMirror();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function switchMirror(view) {
+        document.getElementById('mirror-label').innerText = "Context: " + view.toUpperCase();
+        syncMirror();
+    }
+
+    function syncMirror() {
+        const content = document.getElementById('preview-content');
+        content.innerHTML = '';
+        const view = document.getElementById('mirror-label').innerText.split(': ')[1].toLowerCase();
+        if(view==='COMMERCE'.toLowerCase()) {
+            content.innerHTML = `<img src="${commerceImageData||placeholderImg}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;">
+                <p>${document.getElementById('com-blurb').value||"..."}</p>`;
+        } else if(view==='SHARING'.toLowerCase()) {
+            content.innerHTML = `<img src="${sharingImageData||placeholderImg}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;">
+                <p>${document.getElementById('share-items').value||"..."}</p>`;
+        } else {
+            content.innerHTML = `<img src="${communityImageData||placeholderImg}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;">
+                <p>${document.getElementById('comm-bio').value||"..."}</p>`;
+        }
+    }
+
+    function lockIdentity(){ alert("Identity locked locally."); }
+    function unlockIdentity(){ alert("Identity reset locally."); }
+    function broadcastPresence(){ alert("Broadcasted."); }
+    function clearDraft(){ if(confirm("Clear drafts?")) location.reload(); }
+</script>
+</body>
+</html>

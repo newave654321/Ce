@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sample CE Content</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f0f0; }
+  .container { max-width: 700px; margin: 50px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  h1 { color: #333; }
+  .premium { display: none; background: #fffbdd; padding: 15px; margin-top: 15px; border-left: 5px solid #f1c40f; border-radius: 5px; }
+  .unlock-btn { background: #2ecc71; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+  .unlock-btn:hover { background: #27ae60; }
+  .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>The Future of CE Nodes</h1>
+  <p>Welcome to the CE content sandbox! This section is free to read. Developers can experiment with sidebar integration, content listing, and paywalls.</p>
+  
+  <div class="premium" id="premiumContent">
+    <p><strong>Premium Content:</strong> This section contains content that is only visible after unlocking. You can try implementing token-based or subscription-based access here.</p>
+  </div>
+  
+  <button class="unlock-btn" id="unlockBtn">Unlock Premium Content</button>
+  <div class="note">*Click the button to simulate paywall unlock.</div>
+</div>
+
+<script>
+  const unlockBtn = document.getElementById('unlockBtn');
+  const premiumContent = document.getElementById('premiumContent');
+
+  unlockBtn.addEventListener('click', () => {
+    premiumContent.style.display = 'block';
+    unlockBtn.style.display = 'none';
+  });
+</script>
+</body>
+</html>

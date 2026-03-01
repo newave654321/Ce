@@ -1,0 +1,25 @@
+{
+  "name": "woa-service",
+  "type": "commonjs",
+  "version": "0.1.0",
+  "description": "Web of Agreement service package",
+  "main": "main.js",
+  "scripts": {
+    "start": "node server.cjs",
+    "app": "electron ."
+  },
+  "dependencies": {
+    "axios": "^1.13.5",
+    "cors": "^2.8.6",
+    "electron": "^28.0.0",
+    "express": "^4.19.2",
+    "hyperswarm": "^4.17.0",
+    "multer": "^2.0.2",
+    "nat-upnp": "^1.1.1",
+    "node-fetch": "^2.7.0",
+    "open": "^8.4.0",
+    "stun": "^2.1.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
