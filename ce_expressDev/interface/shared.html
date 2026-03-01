@@ -34,9 +34,7 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
-h2 {
-    margin-top: 0;
-}
+h2 { margin-top: 0; }
 
 .meta {
     font-family: monospace;
@@ -55,10 +53,17 @@ h2 {
     padding: 5px 12px;
     border-radius: 20px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.locked {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+.unlocked {
     background: #e8f8f5;
     color: #27ae60;
-    letter-spacing: 0.5px;
-    float: right;
 }
 
 .content-area {
@@ -74,38 +79,42 @@ h2 {
 <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2>Shared Asset</h2>
-        <span class="status-pill">Broadcast</span>
+        <span id="asset-status" class="status-pill unlocked">Unbound</span>
     </div>
 
-    <div class="meta" id="session-id"></div>
+    <div class="meta" id="asset-path">
+        /ce_content/unbound_asset
+    </div>
 
     <div class="content-area">
-        This asset is distributed via Ce mesh protocol.
+        This asset may bind to a Master Key for monetization.
         <br><br>
-        It does not inherit host identity.
-        Agreement determines continuity.
+        If a valid Ce identity is present, revenue routing activates.
     </div>
 </div>
 
 <script>
-function generateSessionPresence() {
-    let id = sessionStorage.getItem('ce_shared_session');
+function initializeBinding() {
+    const idData = JSON.parse(localStorage.getItem('ce_identity_data') || '{}');
+    const isLocked = localStorage.getItem('ce_identity_locked') === 'true';
 
-    if (!id) {
-        id = crypto.randomUUID().replace(/-/g,'').slice(0,8);
-        sessionStorage.setItem('ce_shared_session', id);
+    const pathEl = document.getElementById('asset-path');
+    const statusEl = document.getElementById('asset-status');
+
+    if (isLocked && idData.masterKey) {
+        pathEl.innerText = `/ce_content/${idData.masterKey}`;
+        statusEl.innerText = "Bound";
+        statusEl.classList.remove("unlocked");
+        statusEl.classList.add("locked");
+    } else {
+        pathEl.innerText = `/ce_content/unbound_asset`;
+        statusEl.innerText = "Unbound";
+        statusEl.classList.remove("locked");
+        statusEl.classList.add("unlocked");
     }
-
-    return id;
 }
 
-function initializeShared() {
-    const sessionId = generateSessionPresence();
-    document.getElementById('session-id').innerText =
-        `/ce_content/session_${sessionId}`;
-}
-
-initializeShared();
+initializeBinding();
 </script>
 
 </body>
