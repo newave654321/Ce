@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ce Simulator — Secure Availability Discovery</title>
+  <style>
+    body { font-family: sans-serif; background:#f5f5f5; padding:20px; }
+    canvas { border:1px solid #999; background:#fff; }
+    .section { margin-bottom:20px; }
+    .node { font-size:0.9em; }
+    button { margin-top:10px; }
+  </style>
+</head>
+<body>
+
+<h1>Ce Browser Simulator</h1>
+<p><strong>Discovery channel:</strong> <code>wss://discovery.ce</code> (simulated)</p>
+
+<div class="section">
+  <input type="file" accept="image/*" id="imageInput">
+</div>
+
+<div class="section">
+  <strong>Availability Beacons</strong>
+  <div id="beacons"></div>
+</div>
+
+<div class="section">
+  <strong>Node Storage & Agreement</strong>
+  <div id="storage"></div>
+</div>
+
+<canvas id="canvas" width="300" height="300"></canvas>
+<br>
+<button onclick="recall()">Recall (Agreement-Gated)</button>
+
+<script>
+/* =====================================================
+   SIMULATED WSS DISCOVERY CHANNEL
+   ===================================================== */
+
+const DiscoveryChannel = {
+  subscribers: [],
+  subscribe(fn) { this.subscribers.push(fn); },
+  broadcast(message) {
+    this.subscribers.forEach(fn => fn(message));
+  }
+};
+
+/* =====================================================
+   NODES (Bloops-like devices)
+   ===================================================== */
+
+const nodes = [
+  { id: "bloops-1", accepts: true, stored: null, agrees: null },
+  { id: "bloops-2", accepts: true, stored: null, agrees: null },
+  { id: "bloops-3", accepts: true, stored: null, agrees: null },
+  { id: "bloops-4", accepts: true, stored: null, agrees: null }
+];
+
+// nodes broadcast availability
+function emitBeacons() {
+  nodes.forEach(n => {
+    DiscoveryChannel.broadcast({
+      protocol: "Ce-FOP/0.1",
+      node: n.id,
+      accepts: ["image.fragment"],
+      max_kb: 64
+    });
+  });
+}
+
+/* =====================================================
+   EXPRESSIVE NODE (BROWSER)
+   ===================================================== */
+
+const beaconsDiv = document.getElementById("beacons");
+const storageDiv = document.getElementById("storage");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let availableNodes = [];
+let fragments = [];
+
+// subscribe to discovery
+DiscoveryChannel.subscribe(beacon => {
+  availableNodes.push(beacon);
+  renderBeacons();
+});
+
+// start discovery
+emitBeacons();
+
+function renderBeacons() {
+  beaconsDiv.innerHTML = "";
+  availableNodes.forEach(b => {
+    beaconsDiv.innerHTML +=
+      `<div class="node">📡 ${b.node} → accepts ${b.accepts.join(", ")}</div>`;
+  });
+}
+
+/* =====================================================
+   IMAGE SHARDING (LOCAL)
+   ===================================================== */
+
+document.getElementById("imageInput").onchange = e => {
+  const img = new Image();
+  img.src = URL.createObjectURL(e.target.files[0]);
+
+  img.onload = () => {
+    fragments = shardImage(img);
+    distributeFragments();
+    URL.revokeObjectURL(img.src);
+  };
+};
+
+function shardImage(img) {
+  const shards = [];
+  const rows = 2, cols = 2;
+  const w = img.width / cols;
+  const h = img.height / rows;
+
+  const off = document.createElement("canvas");
+  const offCtx = off.getContext("2d");
+
+  let id = 0;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      off.width = w;
+      off.height = h;
+
+      offCtx.clearRect(0,0,w,h);
+      offCtx.drawImage(img, c*w, r*h, w, h, 0, 0, w, h);
+
+      shards.push({
+        id: id++,
+        x: c * 150,
+        y: r * 150,
+        data: off.toDataURL()
+      });
+    }
+  }
+  return shards;
+}
+
+/* =====================================================
+   FRAGMENT DISTRIBUTION
+   ===================================================== */
+
+function distributeFragments() {
+  // clear previous state
+  nodes.forEach(n => {
+    n.stored = null;
+    n.agrees = null;
+  });
+
+  // shuffle nodes (true randomness, no overwrite)
+  const shuffled = [...nodes].sort(() => Math.random() - 0.5);
+
+  fragments.forEach((frag, i) => {
+    const node = shuffled[i % shuffled.length];
+
+    // node decides whether to accept
+    if (Math.random() > 0.4) {
+      node.stored = frag;
+    }
+  });
+
+  renderStorage();
+}
+
+function renderStorage() {
+  storageDiv.innerHTML = "";
+  nodes.forEach(n => {
+    storageDiv.innerHTML +=
+      `<div class="node">
+        ${n.id} →
+        ${n.stored ? "stored fragment " + n.stored.id : "empty"}
+        ${n.agrees === null ? "" : (n.agrees ? " ✅ agrees" : " ❌ disagrees")}
+      </div>`;
+  });
+}
+
+/* =====================================================
+   RECALL (AGREEMENT IS EPHEMERAL)
+   ===================================================== */
+
+function resetAgreement() {
+  nodes.forEach(n => n.agrees = null);
+}
+
+function recall() {
+  ctx.clearRect(0,0,300,300);
+  resetAgreement();
+
+  nodes.forEach(n => {
+    n.agrees = Math.random() > 0.5;
+
+    if (n.agrees && n.stored) {
+      const img = new Image();
+      img.src = n.stored.data;
+      img.onload = () => {
+        ctx.drawImage(img, n.stored.x, n.stored.y, 150, 150);
+      };
+    }
+  });
+
+  renderStorage();
+}
+</script>
+
+</body>
+</html>

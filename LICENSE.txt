@@ -1,0 +1,60 @@
+**Creative Commons Attribution–ShareAlike 4.0 International
+with Limited Commercial Use for Coherence-Bound Systems
+(CC BY-SA 4.0 + Ce Commercial Use Policy)**
+
+---
+
+This license applies to all protocol documentation in this repository unless otherwise stated.
+
+Except as modified by the **Ce Commercial Use Policy** below, this work is licensed under the Creative Commons Attribution–ShareAlike 4.0 International License.
+
+---
+
+## You are free to:
+
+* **Share** — copy and redistribute the material in any medium or format
+* **Adapt** — remix, transform, and build upon the material
+
+---
+
+## Under the following terms:
+
+* **Attribution** — You must give appropriate credit and indicate if changes were made.
+* **ShareAlike** — If you remix, transform, or build upon the material, you must distribute your contributions under the same license.
+
+---
+
+## Ce Commercial Use Policy
+
+### (Coherence-Bound Use)
+
+Notwithstanding the above, **Ce may be used in commercial, institutional, or organizational contexts**, provided such use preserves the core principles of the Ce system.
+
+Commercial use is permitted **only when the following conditions are met**:
+
+1. **Agreement remains voluntary**
+   Participation in Ce-based systems must not be coerced, enforced through dependency, or conditioned on identity-based control.
+
+2. **Coherence is preserved**
+   Implementations must not materially alter or undermine the principles of coherence, agreement, and recall as defined by the Ce protocol.
+
+3. **Ce is not used as a mechanism of control or extraction**
+   Ce may not be employed to impose asymmetric power, restrict exit, enforce surveillance, or convert agreement into obligation.
+
+4. **Modifications are disclosed**
+   Any material modification or divergence from the Ce protocol must be clearly disclosed.
+   Systems that violate these principles may not represent themselves as *Ce*.
+
+5. **Ce itself remains non-owned**
+   While Ce may be used within commercial systems, no entity may claim ownership, exclusive control, or proprietary authority over Ce as a system of agreement.
+
+---
+
+Ce is intended to function as **shared infrastructure for coherence and understanding**, not as a proprietary instrument of control.
+
+---
+
+## License Reference
+
+Full Creative Commons license text:
+[https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)

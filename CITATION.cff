@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: Ce Protocol
+message: If you use this protocol in your work, please cite it.
+authors:Rashida Lovely, Najimah Lewis 
+
+* family-names: Lovely
+  given-names: R.
+  version: 0.1.0
+  date-released: 2026-01-01
+  url: [https://github.com/newave654321/ce-protocol](https://github.com/newave654321/ce-protocol)
+  license: CC-BY-NC-SA-4.0

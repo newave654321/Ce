@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coherence Demo</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  canvas { border: 1px solid #000; display: block; margin-top: 10px; }
+  button { margin-top: 10px; padding: 8px 14px; }
+  #status { margin-top: 8px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>Coherence Demo</h1>
+<button id="startBtn">Start Coherence Simulation</button>
+<div id="status">Coherence not yet achieved.</div>
+<canvas id="coherenceCanvas" width="500" height="250"></canvas>
+
+<script>
+  const canvas = document.getElementById("coherenceCanvas");
+  const ctx = canvas.getContext("2d");
+  const statusEl = document.getElementById("status");
+  const startBtn = document.getElementById("startBtn");
+
+  let nodes = [];
+  let animationRunning = false;
+  let coherenceLevel = 0;
+
+  function createNodes(count) {
+    nodes = [];
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: 50 + Math.random() * 400,
+        y: 40 + Math.random() * 170,
+        phase: Math.random() * Math.PI * 2,
+        noise: 6 + Math.random() * 4
+      });
+    }
+  }
+
+  function drawNodes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    nodes.forEach(node => {
+      node.phase += 0.05;
+      const jitterX = Math.cos(node.phase) * node.noise;
+      const jitterY = Math.sin(node.phase) * node.noise;
+
+      ctx.fillStyle = "#000000";
+      ctx.beginPath();
+      ctx.arc(node.x + jitterX, node.y + jitterY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function simulateRecall() {
+    nodes.forEach(node => {
+      if (Math.random() < 0.05) {
+        coherenceLevel = Math.min(1, coherenceLevel + 0.01);
+      }
+    });
+
+    if (coherenceLevel < 0.3) statusEl.textContent = "Coherence not yet achieved.";
+    else if (coherenceLevel < 0.7) statusEl.textContent = "Coherence forming...";
+    else statusEl.textContent = "Coherence achieved.";
+  }
+
+  function animationLoop() {
+    if (!animationRunning) return;
+    drawNodes();
+    simulateRecall();
+    requestAnimationFrame(animationLoop);
+  }
+
+  canvas.addEventListener("click", () => {
+    nodes.forEach(node => node.noise += 2);
+    statusEl.textContent = "External disturbance introduced.";
+  });
+
+  startBtn.addEventListener("click", () => {
+    createNodes(6);
+    coherenceLevel = 0;
+    animationRunning = true;
+    animationLoop();
+  });
+</script>
+
+</body>
+</html>
+
