@@ -12,6 +12,37 @@
     height: 100vh; display: flex; overflow: hidden;
     background: linear-gradient(180deg,#eaf4ff 0%,#ffffff 45%,#dfe7f0 100%);
   }
+/* --- SOVEREIGN HUB SUITE AESTHETIC --- */
+#sovereign-hub-suite {
+  position: fixed;
+  top: 30px;
+  right: 40px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-suite-item { 
+  background: white; 
+  padding: 10px 18px; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+  border: 1px solid #eef2f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  color: #3498db;
+  transition: all 0.3s ease;
+}
+
+.nav-suite-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
 
   #sidebar {
     width: 400px; min-width: 400px; background: #ffffff; padding: 20px;
@@ -139,8 +170,16 @@
   <!-- MAIN AREA -->
   <div id="main">
     <div style="display:flex; gap:15px;">
-      <a href="profile.html" class="nav-link">Neighbor Profile</a>
-      <button class="ce-content-btn">Folder</button>
+       <a href="shared.html" id="nav-shared-folder" class="nav-suite-item">
+    <!-- SVG -->
+    <span id="lbl-nav-shared">Shared</span>
+  </a>
+
+  <a href="profile.html" id="nav-profile-mirror" class="nav-suite-item">
+    <!-- SVG -->
+    <span id="lbl-nav-profile">Profile</span>
+  </a>
+
     </div>
     <h1 id="lbl-web-title" style="color: #222; font-weight: 800; margin-bottom: 30px;">Web of Agreement</h1>
     <input type="text" id="query-bar" placeholder="Drop a request to the mesh...">
