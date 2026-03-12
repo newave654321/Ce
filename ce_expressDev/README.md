@@ -159,7 +159,8 @@ It provides the HTML/JS front-end for interacting with nodes, sending intents, a
 ### Option 1: Open in Browser (Quick Test)
 1. Double-click `start-devnode.bat`:
    ```bat
- 2.  start "" "index.html"
+2. Download node.js
+3.  start "" "index.html"
    In the address bar type: http://localhost:3000/index.html
 - `index.html` — Main entry point for the interface.
 - # DevNode Interface
@@ -192,6 +193,7 @@ It provides the HTML/JS front-end for interacting with nodes, sending intents, a
 - `css/` — Stylesheets for the interface.  
 
 ---
+
 
 
 
